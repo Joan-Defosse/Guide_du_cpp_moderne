@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <numeric>
 
 struct Fraction
 {
@@ -8,8 +9,10 @@ struct Fraction
     int denominateur;
 };
 
+Fraction operator+(Fraction const& frac);
+Fraction operator-(Fraction const& frac);
 Fraction operator+(Fraction const& a, Fraction const& b);
-Fraction operator-(Fraction const& a, Fraction const b);
+Fraction operator-(Fraction const& a, Fraction const& b);
 Fraction operator*(Fraction const& a, Fraction const& b);
 Fraction operator/(Fraction const& a, Fraction const& b);
 
@@ -21,7 +24,11 @@ bool operator<=(Fraction const& a, Fraction const& b);
 bool operator>=(Fraction const& a, Fraction const& b);
 
 std::ostream& operator<<(std::ostream& flux, Fraction const& fraction);
-std::istream& operator>>(std::istream& flux, Fraction & fraction);
+std::istream& operator>>(std::istream& flux, Fraction& fraction);
+
+Fraction opposite(Fraction const& frac);
+Fraction inverse(Fraction const& frac);
+Fraction make_irreductible(Fraction const& frac);
 
 int main()
 {
@@ -38,20 +45,30 @@ int main()
     return 0;
 }
 
+Fraction operator+(Fraction const& frac)
+{
+    return make_irreductible(frac);
+}
+
+Fraction operator-(Fraction const& frac)
+{
+    return make_irreductible({ -frac.numerateur, frac.denominateur });
+}
+
 Fraction operator+(Fraction const& a, Fraction const& b)
 {
     int numerateur{ (a.numerateur * b.denominateur) + (b.numerateur * a.denominateur) };
     int denominateur{ a.denominateur * b.denominateur };
 
-    return { numerateur, denominateur };
+    return make_irreductible({ numerateur, denominateur });
 }
 
-Fraction operator-(Fraction const& a, Fraction const b)
+Fraction operator-(Fraction const& a, Fraction const& b)
 {
     int numerateur{ (a.numerateur * b.denominateur) - (b.numerateur * a.denominateur) };
     int denominateur{ a.denominateur * b.denominateur };
 
-    return { numerateur, denominateur };
+    return make_irreductible({ numerateur, denominateur });
 }
 
 Fraction operator*(Fraction const& a, Fraction const& b)
@@ -59,7 +76,7 @@ Fraction operator*(Fraction const& a, Fraction const& b)
     int numerateur{ a.numerateur * b.numerateur };
     int denominateur{ a.denominateur * b.denominateur };
 
-    return { numerateur, denominateur };
+    return make_irreductible({ numerateur, denominateur });
 }
 
 Fraction operator/(Fraction const& a, Fraction const& b)
@@ -67,7 +84,7 @@ Fraction operator/(Fraction const& a, Fraction const& b)
     int numerateur{ a.numerateur * b.denominateur };
     int denominateur{ a.denominateur * b.numerateur };
 
-    return { numerateur, denominateur };
+    return make_irreductible({ numerateur, denominateur });
 }
 
 bool operator==(Fraction const& a, Fraction const& b)
@@ -105,7 +122,7 @@ std::ostream& operator<<(std::ostream& flux, Fraction const& fraction)
     return flux << fraction.numerateur << '/' << fraction.denominateur;
 }
 
-std::istream& operator>>(std::istream& flux, Fraction & fraction)
+std::istream& operator>>(std::istream& flux, Fraction& fraction)
 {
     std::string frac{};
     std::string num{};
@@ -113,11 +130,37 @@ std::istream& operator>>(std::istream& flux, Fraction & fraction)
     flux >> frac;
 
     auto it = std::find(std::begin(frac), std::end(frac), '/');
+
+    if (it == std::end(frac))
+    {
+        std::cout << "Erreur !\n";
+        return flux;
+    }
+
     num = { std::begin(frac), it };
     den = { ++it, std::end(frac) };
 
     fraction.numerateur = std::stoi(num);
     fraction.denominateur = std::stoi(den);
 
+    fraction = make_irreductible(fraction);
+
     return flux;
+}
+
+Fraction opposite(Fraction const& frac)
+{
+    return -frac;
+}
+
+Fraction inverse(Fraction const& frac)
+{
+    return { frac.denominateur, frac.numerateur };
+}
+
+Fraction make_irreductible(Fraction const& frac)
+{
+    int gcd = std::gcd(frac.numerateur, frac.denominateur);
+
+    return { (frac.numerateur / gcd), (frac.denominateur / gcd) };
 }
