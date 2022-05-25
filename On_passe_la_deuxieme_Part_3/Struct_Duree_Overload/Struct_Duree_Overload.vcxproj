@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f7d98af7-71f1-486b-99d6-4be75a0422d7}</ProjectGuid>
-    <RootNamespace>Operatoroverload</RootNamespace>
+    <ProjectGuid>{ce138166-1a05-4d7d-adbb-128e5f4350ea}</ProjectGuid>
+    <RootNamespace>StructDureeOverload</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,7 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Operator_overload.cpp" />
+    <ClCompile Include="Struct_Duree_Overload.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
