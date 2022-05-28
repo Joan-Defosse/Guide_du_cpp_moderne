@@ -9,6 +9,8 @@
 #include <fstream>
 #include <algorithm>
 #include <cctype>
+#include <tuple>
+#include <string>
 #include <vector>
 
 /************************************************
@@ -38,7 +40,6 @@ std::ostream& operator<<(std::ostream& sortie, Artiste const& artiste);
 std::ostream& operator<<(std::ostream& sortie, Album const& album);
 std::ostream& operator<<(std::ostream& sortie, Morceau const& morceau);
 std::istream& operator>>(std::istream& entree, Morceau& morceau);
-void ajouter_morceau(Discographie& disco, std::string const& nom_morceau, std::string const& nom_album, std::string const& nom_artiste);
 
 void test_creation_morceau_entree_complete();
 void test_creation_morceau_entree_espaces_partout();
@@ -60,6 +61,12 @@ void affichage_artiste(Discographie const& discographie);
 
 void enregistrement(Discographie const& discographie, std::string const& nom_fichier);
 void chargement(Discographie& discographie, std::string const& nom_fichier);
+
+enum class Commande { Afficher, Ajouter, Enregistrer, Charger, Quitter };
+
+std::string recuper_commande();
+std::tuple<Commande, std::string> analyser_commande(std::string const& commande_texte);
+bool executer_commande(Discographie& discographie, Commande commande, std::string const& instructions);
 
 /************************************************
 ***             Progamme principal
@@ -153,14 +160,27 @@ std::istream& operator>>(std::istream& entree, Morceau& morceau)
     return entree;
 }
 
-void ajouter_morceau(Discographie& disco, std::string const& nom_morceau, std::string const& nom_album, std::string const& nom_artiste)
-{
-    
-}
-
 void affichage(Discographie& discographie, Affichage type_affichage)
 {
-
+    if (type_affichage == Affichage::Album)
+    {
+        tri_album(discographie);
+        affichage_album(discographie);
+    }
+    else if (type_affichage == Affichage::Artiste)
+    {
+        tri_artiste(discographie);
+        affichage_artiste(discographie);
+    }
+    else if (type_affichage == Affichage::Morceau)
+    {
+        tri_morceau(discographie);
+        affichage_morceau(discographie);
+    }
+    else
+    {
+        throw std::runtime_error("Commande d'affichage inconnue.");
+    }
 }
 
 void tri_morceau(Discographie& discographie)
@@ -191,17 +211,52 @@ void tri_artiste(Discographie& discographie)
 
 void affichage_morceau(Discographie const& discographie)
 {
-
+    for (Morceau const& morceau : discographie)
+    {
+        std::cout << "--> " << morceau << std::endl;
+    }
 }
 
 void affichage_album(Discographie const& discographie)
 {
+    Album album_precedent{};
 
+    for (Morceau const& morceau : discographie)
+    {
+        if (morceau.album.nom != album_precedent.nom)
+        {
+            std::cout << "--> " << morceau.album << " | "
+                << morceau.compositeur << std::endl;
+        }
+
+        std::cout << "\t/--> " << morceau.nom << std::endl;
+
+        album_precedent = morceau.album;
+    }
 }
 
 void affichage_artiste(Discographie const& discographie)
 {
+    Artiste artiste_precedent{};
+    Album album_precedent{};
 
+    for (Morceau const& morceau : discographie)
+    {
+        if (morceau.compositeur.nom != artiste_precedent.nom)
+        {
+            std::cout << "--> " << morceau.compositeur << std::endl;
+        }
+        
+        if (morceau.album.nom != album_precedent.nom)
+        {
+            std::cout << "\t/--> " << morceau.album << std::endl;
+        }
+
+        std::cout << "\t\t/--> " << morceau.nom << std::endl;
+
+        artiste_precedent = morceau.compositeur;
+        album_precedent = morceau.album;
+    }
 }
 
 void enregistrement(Discographie const& discographie, std::string const& nom_fichier)
@@ -235,6 +290,97 @@ void chargement(Discographie& discographie, std::string const& nom_fichier)
 
         discographie.push_back(morceau);
     }
+}
+
+std::string recuper_commande()
+{
+    std::cout << "> ";
+    std::string commande{};
+    std::getline(std::cin, commande);
+
+    return commande;
+}
+
+std::tuple<Commande, std::string> analyser_commande(std::string const& commande_texte)
+{
+    std::istringstream flux{ commande_texte };
+    std::string premier_mot{};
+    std::string instructions{};
+
+    flux >> premier_mot;
+    premier_mot = traitement_chaine(premier_mot);
+
+    std::getline(flux, instructions);
+    instructions = traitement_chaine(instructions);
+
+    if (premier_mot == "afficher")
+    {
+        return { Commande::Afficher, instructions };
+    }
+    else if (premier_mot == "ajouter")
+    {
+        return { Commande::Ajouter, instructions };
+    }
+    else if (premier_mot == "charger")
+    {
+        return { Commande::Charger, instructions };
+    }
+    else if (premier_mot == "enregistrer")
+    {
+        return { Commande::Enregistrer, instructions };
+    }
+    else if (premier_mot == "quitter")
+    {
+        return { Commande::Quitter, std::string{} };
+    }
+    else
+    {
+        throw std::runtime_error("Commande invalide.");
+    }
+}
+
+bool executer_commande(Discographie& discographie, Commande commande, std::string const& instructions)
+{
+    if (commande == Commande::Afficher)
+    {
+        if (instructions == "artistes")
+        {
+            affichage(discographie, Affichage::Artiste);
+        }
+        else if (instructions == "albums")
+        {
+            affichage(discographie, Affichage::Album);
+        }
+        else if (instructions == "morceaux")
+        {
+            affichage(discographie, Affichage::Morceau);
+        }
+        else
+        {
+            throw std::runtime_error("Commande d'affichage inconnue.");
+        }
+    }
+    else if (commande == Commande::Ajouter)
+    {
+        std::istringstream flux{ instructions };
+        Morceau morceau{};
+        flux >> morceau;
+        discographie.push_back(morceau);
+    }
+    else if (commande == Commande::Charger)
+    {
+        chargement(discographie, instructions);
+    }
+    else if (commande == Commande::Enregistrer)
+    {
+        enregistrement(discographie, instructions);
+    }
+    else if (commande == Commande::Quitter)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 /************************************************
