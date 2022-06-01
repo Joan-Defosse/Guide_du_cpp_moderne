@@ -24,6 +24,7 @@
     <ProjectGuid>{73dc1987-9633-4e5e-ab45-285ef76a0903}</ProjectGuid>
     <RootNamespace>Correction</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Gestionnaire_de_discographie</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -131,10 +132,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Correction.cpp" />
+    <ClCompile Include="discographie.cpp" />
+    <ClCompile Include="donnees_disco.cpp" />
+    <ClCompile Include="donnees_disco_tests.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="systeme_commandes.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="exemple.txt" />
+    <Text Include="rock.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="discographie.hpp" />
+    <ClInclude Include="donnees_disco.hpp" />
+    <ClInclude Include="donnees_disco_tests.hpp" />
+    <ClInclude Include="systeme_commandes.hpp" />
+    <ClInclude Include="utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
