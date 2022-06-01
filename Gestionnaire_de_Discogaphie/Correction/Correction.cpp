@@ -2,20 +2,21 @@
 ***             Fichiers d'en-tête
 *************************************************/
 
+#include <algorithm>
 #include <cassert>
-#include <exception>
+#include <cctype>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
-#include <algorithm>
-#include <cctype>
-#include <tuple>
 #include <string>
+#include <tuple>
 #include <vector>
 
 /************************************************
 ***             Définitions
 *************************************************/
+
+std::string traitement_chaine(std::string const& chaine);
 
 struct Artiste
 {
@@ -30,8 +31,8 @@ struct Album
 struct Morceau
 {
     std::string nom;
-    Album album;
     Artiste compositeur;
+    Album album;
 };
 
 using Discographie = std::vector<Morceau>;
@@ -64,7 +65,7 @@ void chargement(Discographie& discographie, std::string const& nom_fichier);
 
 enum class Commande { Afficher, Ajouter, Enregistrer, Charger, Quitter };
 
-std::string recuper_commande();
+std::string recuperer_commande();
 std::tuple<Commande, std::string> analyser_commande(std::string const& commande_texte);
 bool executer_commande(Discographie& discographie, Commande commande, std::string const& instructions);
 
@@ -75,7 +76,33 @@ bool executer_commande(Discographie& discographie, Commande commande, std::strin
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    test_creation_morceau_entree_complete();
+    test_creation_morceau_entree_espaces_partout();
+    test_creation_morceau_entree_vide();
+    test_creation_morceau_entree_chanson_artiste();
+    test_creation_morceau_entree_chanson_uniquement();
+
+    Discographie discographie{};
+
+    bool continuer{ true };
+    do
+    {
+        try
+        {
+            std::string entree{ recuperer_commande() };
+            auto [commande, instructions] { analyser_commande(entree) };
+            instructions = traitement_chaine(instructions);
+            continuer = executer_commande(discographie, commande, instructions);
+        }
+        catch (std::runtime_error const& exception)
+        {
+            std::cout << "Erreur : " << exception.what() << std::endl;
+        }
+
+    } while (continuer);
+
+
+    return 0;
 }
 
 /************************************************
@@ -89,8 +116,10 @@ std::string traitement_chaine(std::string const& chaine)
     auto premier_non_espace{ std::find_if_not(std::begin(copie), std::end(copie), isspace) };
     copie.erase(std::begin(copie), premier_non_espace);
 
-    premier_non_espace = std::find_if_not(std::rbegin(copie), std::rend(copie), isspace).base();
-    copie.erase(premier_non_espace, std::end(copie));
+    std::reverse(std::begin(copie), std::end(copie));
+    premier_non_espace = std::find_if_not(std::begin(copie), std::end(copie), isspace);
+    copie.erase(std::begin(copie), premier_non_espace);
+    std::reverse(std::begin(copie), std::end(copie));
 
     return copie;
 }
@@ -129,7 +158,7 @@ std::istream& operator>>(std::istream& entree, Morceau& morceau)
         nom_morceau = "Morceau inconnu";
     }
     morceau.nom = traitement_chaine(nom_morceau);
-    flux.str(std::string{});
+    flux.str("");
 
     while (entree >> mot && mot != "|")
     {
@@ -142,7 +171,7 @@ std::istream& operator>>(std::istream& entree, Morceau& morceau)
         nom_album = "Album inconnu";
     }
     morceau.album.nom = traitement_chaine(nom_album);
-    flux.str(std::string{});
+    flux.str("");
 
     while (entree >> mot && mot != "|")
     {
@@ -155,7 +184,7 @@ std::istream& operator>>(std::istream& entree, Morceau& morceau)
         nom_artiste = "Artiste inconnu";
     }
     morceau.compositeur.nom = traitement_chaine(nom_artiste);
-    flux.str(std::string{});
+    flux.str("");
 
     return entree;
 }
@@ -292,7 +321,7 @@ void chargement(Discographie& discographie, std::string const& nom_fichier)
     }
 }
 
-std::string recuper_commande()
+std::string recuperer_commande()
 {
     std::cout << "> ";
     std::string commande{};
@@ -447,7 +476,7 @@ void test_creation_morceau_entree_vide()
 
     entree >> morceau;
 
-    assert(morceau.nom == "Moceau inconnu" && "Le nom du morceau doit etre 'Morceau inconnu'.");
+    assert(morceau.nom == "Morceau inconnu" && "Le nom du morceau doit etre 'Morceau inconnu'.");
     assert(morceau.album.nom == "Album inconnu" && "Le nom de l'album doit etre 'Album inconnu'.");
     assert(morceau.compositeur.nom == "Artiste inconnu" && "Le nom de l'artiste doit etre 'Artiste inconnu'.");
 }
