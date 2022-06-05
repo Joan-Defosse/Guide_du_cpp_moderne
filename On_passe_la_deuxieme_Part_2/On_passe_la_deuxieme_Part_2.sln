@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Template_overload", "Templa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lambda_Template", "Lambda_Template\Lambda_Template.vcxproj", "{658CBEED-D419-4468-9F51-82304339AF13}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Template_files", "Template_files\Template_files.vcxproj", "{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -131,6 +133,14 @@ Global
 		{658CBEED-D419-4468-9F51-82304339AF13}.Release|x64.Build.0 = Release|x64
 		{658CBEED-D419-4468-9F51-82304339AF13}.Release|x86.ActiveCfg = Release|Win32
 		{658CBEED-D419-4468-9F51-82304339AF13}.Release|x86.Build.0 = Release|Win32
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Debug|x64.ActiveCfg = Debug|x64
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Debug|x64.Build.0 = Debug|x64
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Debug|x86.ActiveCfg = Debug|Win32
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Debug|x86.Build.0 = Debug|Win32
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Release|x64.ActiveCfg = Release|x64
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Release|x64.Build.0 = Release|x64
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Release|x86.ActiveCfg = Release|Win32
+		{35CBDDC8-5AFD-4E26-B7B8-35C1BFE91DC5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
